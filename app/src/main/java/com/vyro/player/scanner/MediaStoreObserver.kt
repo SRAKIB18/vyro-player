@@ -39,6 +39,11 @@ class MediaStoreObserver @Inject constructor(
                 true,
                 contentObserver!!
             )
+            context.contentResolver.registerContentObserver(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                true,
+                contentObserver!!
+            )
         } catch (e: Exception) {
             e.printStackTrace()
         }

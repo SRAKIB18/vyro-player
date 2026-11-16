@@ -1,5 +1,7 @@
 package com.vyro.player.presentation.music
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +33,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarBorder
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -45,6 +48,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -55,10 +59,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vyro.player.core.util.FileUtils
+import com.vyro.player.core.util.PermissionUtils
 import com.vyro.player.core.util.TimeUtils
 import com.vyro.player.domain.model.AudioAlbum
 import com.vyro.player.domain.model.AudioArtist
@@ -72,10 +78,28 @@ fun MusicScreen(
     currentRoute: String?,
     onNavigate: (String) -> Unit
 ) {
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
     val playerState by viewModel.playerState.collectAsState()
     var selectedTab by remember { mutableIntStateOf(0) }
     var showFullPlayerSheet by remember { mutableStateOf(false) }
+
+    var hasAudioPermission by remember { mutableStateOf(PermissionUtils.hasAudioPermission(context)) }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        hasAudioPermission = PermissionUtils.hasAudioPermission(context)
+        if (hasAudioPermission) {
+            viewModel.scanAudioMedia()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (hasAudioPermission) {
+            viewModel.scanAudioMedia()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -112,7 +136,13 @@ fun MusicScreen(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.weight(1f)
                     )
-                    IconButton(onClick = { viewModel.scanAudioMedia() }) {
+                    IconButton(onClick = {
+                        if (!hasAudioPermission) {
+                            permissionLauncher.launch(PermissionUtils.getRequiredVideoPermissions())
+                        } else {
+                            viewModel.scanAudioMedia()
+                        }
+                    }) {
                         Icon(Icons.Default.Refresh, contentDescription = "Scan Audio")
                     }
                 }
@@ -179,7 +209,40 @@ fun MusicScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (uiState.isLoading || uiState.isScanning) {
+            if (!hasAudioPermission) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MusicNote,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(64.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Storage Permission Required",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "VYRO Player needs permission to access and play audio files stored on your device.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Button(onClick = {
+                        permissionLauncher.launch(PermissionUtils.getRequiredVideoPermissions())
+                    }) {
+                        Text("Grant Permission")
+                    }
+                }
+            } else if (uiState.isLoading || uiState.isScanning) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
                 val filteredSongs = if (uiState.searchQuery.isBlank()) {
@@ -194,14 +257,14 @@ fun MusicScreen(
                 when (selectedTab) {
                     0 -> SongsList(
                         songs = filteredSongs,
-                        onSongClick = { viewModel.playAudio(it) },
+                        onSongClick = { song -> viewModel.playAudio(song, filteredSongs) },
                         onFavoriteToggle = { viewModel.toggleFavorite(it.id) }
                     )
                     1 -> AlbumsList(albums = uiState.albums)
                     2 -> ArtistsList(artists = uiState.artists)
                     3 -> SongsList(
                         songs = filteredSongs.filter { it.isFavorite },
-                        onSongClick = { viewModel.playAudio(it) },
+                        onSongClick = { song -> viewModel.playAudio(song, filteredSongs.filter { f -> f.isFavorite }) },
                         onFavoriteToggle = { viewModel.toggleFavorite(it.id) }
                     )
                 }
@@ -212,6 +275,8 @@ fun MusicScreen(
             MusicPlayerBottomSheet(
                 playerState = playerState,
                 onTogglePlayPause = { viewModel.togglePlayPause() },
+                onPlayNext = { viewModel.playNextAudio() },
+                onPlayPrevious = { viewModel.playPreviousAudio() },
                 onSeekTo = { viewModel.seekTo(it) },
                 onDismiss = { showFullPlayerSheet = false }
             )

@@ -7,9 +7,13 @@ import com.vyro.player.domain.model.AudioArtist
 import com.vyro.player.domain.model.AudioItem
 import com.vyro.player.domain.repository.AudioRepository
 import com.vyro.player.scanner.MediaScanner
+import com.vyro.player.scanner.MediaStoreObserver
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -17,8 +21,21 @@ import javax.inject.Singleton
 @Singleton
 class AudioRepositoryImpl @Inject constructor(
     private val audioDao: AudioDao,
-    private val mediaScanner: MediaScanner
+    private val mediaScanner: MediaScanner,
+    private val mediaStoreObserver: MediaStoreObserver
 ) : AudioRepository {
+
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    init {
+        mediaStoreObserver.startObserving()
+        scope.launch {
+            scanAudioMedia()
+            mediaStoreObserver.mediaChangeEvent.collect {
+                scanAudioMedia()
+            }
+        }
+    }
 
     override fun getAllAudioTracks(): Flow<List<AudioItem>> {
         return audioDao.getAllAudioTracks().map { entities ->

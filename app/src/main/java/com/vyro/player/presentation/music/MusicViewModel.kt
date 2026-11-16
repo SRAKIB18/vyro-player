@@ -76,8 +76,17 @@ class MusicViewModel @Inject constructor(
         }
     }
 
-    fun playAudio(audioItem: AudioItem) {
-        playerManager.prepareAndPlayAudio(audioItem)
+    fun playAudio(audioItem: AudioItem, playlist: List<AudioItem> = _uiState.value.songs) {
+        val index = playlist.indexOfFirst { it.id == audioItem.id }.coerceAtLeast(0)
+        playerManager.prepareAndPlayAudioQueue(playlist, index)
+    }
+
+    fun playNextAudio() {
+        playerManager.playNextAudio()
+    }
+
+    fun playPreviousAudio() {
+        playerManager.playPreviousAudio()
     }
 
     fun togglePlayPause() {

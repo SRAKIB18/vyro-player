@@ -99,6 +99,9 @@ class VyroPlayerManager @Inject constructor(
     private var totalDroppedFrames = 0
     private var preBoostSpeed = 1.0f
 
+    private var currentAudioPlaylist = listOf<AudioItem>()
+    private var currentAudioIndex = 0
+
     // Audio Becoming Noisy Receiver (Headphone disconnect auto-pause)
     private val noisyReceiver = object : BroadcastReceiver() {
         override fun onReceive(ctx: Context?, intent: Intent?) {
@@ -152,6 +155,10 @@ class VyroPlayerManager @Inject constructor(
                     isEnded = isEnded,
                     duration = player.duration.coerceAtLeast(0L)
                 )
+
+                if (isEnded && _playerState.value.mediaType == MediaType.AUDIO && currentAudioPlaylist.isNotEmpty()) {
+                    playNextAudio()
+                }
             }
 
             override fun onTracksChanged(tracks: Tracks) {
@@ -421,6 +428,27 @@ class VyroPlayerManager @Inject constructor(
         player.setMediaItem(mediaItem)
         player.prepare()
         player.playWhenReady = true
+    }
+
+    fun prepareAndPlayAudioQueue(playlist: List<AudioItem>, startIndex: Int = 0) {
+        if (playlist.isEmpty()) return
+        currentAudioPlaylist = playlist
+        currentAudioIndex = startIndex.coerceIn(0, playlist.size - 1)
+        prepareAndPlayAudio(currentAudioPlaylist[currentAudioIndex])
+    }
+
+    fun playNextAudio() {
+        if (currentAudioPlaylist.isNotEmpty()) {
+            currentAudioIndex = (currentAudioIndex + 1) % currentAudioPlaylist.size
+            prepareAndPlayAudio(currentAudioPlaylist[currentAudioIndex])
+        }
+    }
+
+    fun playPreviousAudio() {
+        if (currentAudioPlaylist.isNotEmpty()) {
+            currentAudioIndex = if (currentAudioIndex > 0) currentAudioIndex - 1 else currentAudioPlaylist.size - 1
+            prepareAndPlayAudio(currentAudioPlaylist[currentAudioIndex])
+        }
     }
 
     fun prepareAndPlayAudio(audioItem: AudioItem) {

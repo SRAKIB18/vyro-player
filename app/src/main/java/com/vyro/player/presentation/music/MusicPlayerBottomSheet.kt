@@ -47,6 +47,8 @@ import com.vyro.player.player.VyroPlayerState
 fun MusicPlayerBottomSheet(
     playerState: VyroPlayerState,
     onTogglePlayPause: () -> Unit,
+    onPlayNext: () -> Unit,
+    onPlayPrevious: () -> Unit,
     onSeekTo: (Long) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -150,7 +152,7 @@ fun MusicPlayerBottomSheet(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = { }) {
+                IconButton(onClick = onPlayPrevious) {
                     Icon(
                         imageVector = Icons.Default.SkipPrevious,
                         contentDescription = "Previous Track",
@@ -174,7 +176,7 @@ fun MusicPlayerBottomSheet(
                     )
                 }
 
-                IconButton(onClick = { }) {
+                IconButton(onClick = onPlayNext) {
                     Icon(
                         imageVector = Icons.Default.SkipNext,
                         contentDescription = "Next Track",
