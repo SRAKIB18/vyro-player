@@ -2,6 +2,7 @@ package com.vyro.player.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -97,9 +98,50 @@ fun VideoGridItemCard(
                 // Actual Video Frame Thumbnail Image
                 VideoThumbnailImage(
                     videoPath = video.path,
+                    thumbnailPath = video.thumbnailPath,
                     contentDescription = video.title,
                     modifier = Modifier.matchParentSize()
                 )
+
+                // Resolution & HDR Badges Top Left
+                Row(
+                    modifier = Modifier
+                        .padding(6.dp)
+                        .align(Alignment.TopStart),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    if (video.resolution.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.9f))
+                                .padding(horizontal = 5.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = video.resolution,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    if (video.hdrFormat != "SDR Standard" && video.hdrFormat != "SDR" && video.hdrFormat.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(Color(0xFFFF9100))
+                                .padding(horizontal = 5.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = video.hdrFormat,
+                                color = Color.Black,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
 
                 // Play Icon Overlay
                 Box(
@@ -239,6 +281,7 @@ fun VideoListItemCard(
                 // Actual Video Frame Thumbnail Image
                 VideoThumbnailImage(
                     videoPath = video.path,
+                    thumbnailPath = video.thumbnailPath,
                     contentDescription = video.title,
                     modifier = Modifier.matchParentSize()
                 )
@@ -292,16 +335,35 @@ fun VideoListItemCard(
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = video.title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = video.title,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+                    if (video.hdrFormat != "SDR Standard" && video.hdrFormat != "SDR" && video.hdrFormat.isNotEmpty()) {
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(Color(0xFFFF9100))
+                                .padding(horizontal = 4.dp, vertical = 1.dp)
+                        ) {
+                            Text(
+                                text = video.hdrFormat,
+                                color = Color.Black,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${video.folderName} • ${FileUtils.formatFileSize(video.size)}",
+                    text = "${if (video.resolution.isNotEmpty()) "${video.resolution} • " else ""}${video.folderName} • ${FileUtils.formatFileSize(video.size)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

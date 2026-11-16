@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.vyro.player.domain.model.ResolutionFilter
 import com.vyro.player.domain.model.SortOption
 import com.vyro.player.domain.model.SortOrder
 
@@ -29,8 +30,10 @@ import com.vyro.player.domain.model.SortOrder
 fun SortFilterDialog(
     currentOption: SortOption,
     currentOrder: SortOrder,
+    currentResolutionFilter: ResolutionFilter = ResolutionFilter.ALL,
     onOptionSelected: (SortOption) -> Unit,
     onOrderSelected: (SortOrder) -> Unit,
+    onResolutionSelected: (ResolutionFilter) -> Unit = {},
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -80,7 +83,41 @@ fun SortFilterDialog(
                                 SortOption.DATE -> "Date Added"
                                 SortOption.SIZE -> "File Size"
                                 SortOption.DURATION -> "Duration"
+                                SortOption.RESOLUTION -> "Resolution"
                             },
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "RESOLUTION FILTER",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ResolutionFilter.entries.forEach { resFilter ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onResolutionSelected(resFilter) }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = currentResolutionFilter == resFilter,
+                            onClick = { onResolutionSelected(resFilter) },
+                            colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = resFilter.displayName,
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }

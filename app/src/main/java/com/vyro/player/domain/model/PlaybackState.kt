@@ -15,6 +15,7 @@ enum class AspectRatioMode {
     FIT,
     FILL,
     ZOOM,
+    STRETCH,
     RATIO_16_9,
     RATIO_4_3
 }

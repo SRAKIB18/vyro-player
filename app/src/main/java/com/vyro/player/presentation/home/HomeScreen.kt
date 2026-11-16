@@ -175,7 +175,7 @@ fun HomeScreen(
                                 viewMode = ViewMode.GRID,
                                 onClick = { onVideoClick(video.id) },
                                 onFavoriteToggle = { viewModel.toggleFavorite(video.id) },
-                                onOptionsClick = { /* Options */ }
+                                onOptionsClick = { }
                             )
                         }
                     }
@@ -233,7 +233,7 @@ fun HomeScreen(
                                 viewMode = ViewMode.LIST,
                                 onClick = { onVideoClick(video.id) },
                                 onFavoriteToggle = { viewModel.toggleFavorite(video.id) },
-                                onOptionsClick = { /* Options */ }
+                                onOptionsClick = { }
                             )
                         }
                     }
@@ -244,8 +244,10 @@ fun HomeScreen(
                 SortFilterDialog(
                     currentOption = uiState.sortOption,
                     currentOrder = uiState.sortOrder,
+                    currentResolutionFilter = uiState.resolutionFilter,
                     onOptionSelected = { viewModel.setSortOption(it) },
                     onOrderSelected = { viewModel.setSortOrder(it) },
+                    onResolutionSelected = { viewModel.setResolutionFilter(it) },
                     onDismiss = { viewModel.setSortDialogVisible(false) }
                 )
             }

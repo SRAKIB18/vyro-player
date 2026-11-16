@@ -116,7 +116,8 @@ class VideoRepositoryImpl @Inject constructor(
                     folderName = item.folderName,
                     lastPlayedPosition = existing?.lastPlayedPosition ?: 0L,
                     isFavorite = existing?.isFavorite ?: false,
-                    thumbnailPath = item.thumbnailPath
+                    thumbnailPath = item.thumbnailPath,
+                    hdrFormat = item.hdrFormat
                 )
             }
             videoDao.insertVideos(entities)
@@ -146,7 +147,8 @@ class VideoRepositoryImpl @Inject constructor(
                     folderName = item.folderName,
                     lastPlayedPosition = existing?.lastPlayedPosition ?: 0L,
                     isFavorite = existing?.isFavorite ?: false,
-                    thumbnailPath = item.thumbnailPath
+                    thumbnailPath = item.thumbnailPath,
+                    hdrFormat = item.hdrFormat
                 )
             }
             videoDao.insertVideos(entities)
@@ -170,6 +172,7 @@ class VideoRepositoryImpl @Inject constructor(
         folderName = folderName,
         lastPlayedPosition = lastPlayedPosition,
         isFavorite = isFavorite,
-        thumbnailPath = thumbnailPath
+        thumbnailPath = thumbnailPath,
+        hdrFormat = hdrFormat
     )
 }

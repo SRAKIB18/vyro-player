@@ -361,31 +361,31 @@ Use Android official HDR APIs and Media3.
 ## **Prompt 08 — Advanced Playback Controls**
 
 ```
-Implement professional playback controls.
+    Implement professional playback controls.
 
-Features:
-- Play / Pause
-- Previous / Next
-- Seek forward / backward
-- Timeline scrubbing
-- Playback speed: 0.25x to 4x
-- Rotation: 0, 90, 180, 270 degrees
-- Auto rotation
-- Portrait and landscape lock
-- Aspect ratio: Fit, Fill, Crop, Stretch
-- Zoom in / out
-- Frame-by-frame seeking
-- A-B repeat
-- Sleep timer
-- Resume playback
-- Double-tap seeking
-- Long press speed boost
-- Screen lock
-- Hide controls automatically
-- Customizable seek interval
+    Features:
+    - Play / Pause
+    - Previous / Next
+    - Seek forward / backward
+    - Timeline scrubbing
+    - Playback speed: 0.25x to 4x
+    - Rotation: 0, 90, 180, 270 degrees
+    - Auto rotation
+    - Portrait and landscape lock
+    - Aspect ratio: Fit, Fill, Crop, Stretch
+    - Zoom in / out
+    - Frame-by-frame seeking
+    - A-B repeat
+    - Sleep timer
+    - Resume playback
+    - Double-tap seeking
+    - Long press speed boost
+    - Screen lock
+    - Hide controls automatically
+    - Customizable seek interval
 
-All controls must actually work.
-Save user preferences.
+    All controls must actually work.
+    Save user preferences.
 ```
 
 ## **Prompt 09 — Advanced Gesture System**

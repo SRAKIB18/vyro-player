@@ -16,5 +16,6 @@ data class VideoItem(
     val folderName: String = "",
     val lastPlayedPosition: Long = 0L,
     val isFavorite: Boolean = false,
-    val thumbnailPath: String? = null
+    val thumbnailPath: String? = null,
+    val hdrFormat: String = "SDR"
 )

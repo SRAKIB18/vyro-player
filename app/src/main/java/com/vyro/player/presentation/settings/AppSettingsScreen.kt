@@ -9,15 +9,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeveloperBoard
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Gesture
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Subtitles
 import androidx.compose.material3.AlertDialog
@@ -30,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -45,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.vyro.player.domain.model.AspectRatioMode
 import com.vyro.player.domain.model.ThemeMode
 import com.vyro.player.presentation.components.VyroBottomBar
 
@@ -60,8 +68,14 @@ fun AppSettingsScreen(
     onNavigateToDecoders: () -> Unit
 ) {
     val settings by viewModel.settingsState.collectAsState()
+
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showSpeedDialog by remember { mutableStateOf(false) }
+    var showAspectDialog by remember { mutableStateOf(false) }
+    var showSeekDialog by remember { mutableStateOf(false) }
+    var showLangDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
+    var showCacheClearedMessage by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -82,38 +96,10 @@ fun AppSettingsScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            SettingNavigationCard(
-                title = "Favorite Videos",
-                subtitle = "Manage your bookmarked videos",
-                icon = Icons.Default.Star,
-                onClick = onNavigateToFavorites
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-
-            SettingNavigationCard(
-                title = "Playback Settings",
-                subtitle = "Hardware acceleration, background play & controls",
-                icon = Icons.Default.PlayCircle,
-                onClick = onNavigateToPlaybackSettings
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-
-            SettingNavigationCard(
-                title = "Subtitle Settings",
-                subtitle = "Subtitles font size, language & background",
-                icon = Icons.Default.Subtitles,
-                onClick = onNavigateToSubtitleSettings
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-
-            SettingNavigationCard(
-                title = "Hardware Decoders",
-                subtitle = "View video decoders & HDR capabilities",
-                icon = Icons.Default.DeveloperBoard,
-                onClick = onNavigateToDecoders
-            )
-            Spacer(modifier = Modifier.height(10.dp))
+            Text("General & Look", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+            Spacer(modifier = Modifier.height(8.dp))
 
             SettingNavigationCard(
                 title = "App Theme Mode",
@@ -124,10 +110,91 @@ fun AppSettingsScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             SettingNavigationCard(
-                title = "Rescan Media Storage",
-                subtitle = "Refresh videos in internal storage",
+                title = "App Interface Language",
+                subtitle = "Currently: ${settings.appLanguage}",
+                icon = Icons.Default.Language,
+                onClick = { showLangDialog = true }
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text("Playback & Controls", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            SettingNavigationCard(
+                title = "Default Playback Speed",
+                subtitle = "Currently: ${settings.defaultSpeed}x",
+                icon = Icons.Default.Speed,
+                onClick = { showSpeedDialog = true }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            SettingNavigationCard(
+                title = "Default Aspect Ratio",
+                subtitle = "Currently: ${settings.defaultAspectRatio.name}",
+                icon = Icons.Default.PlayCircle,
+                onClick = { showAspectDialog = true }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            SettingNavigationCard(
+                title = "Double Tap Seek Step",
+                subtitle = "Currently: ${settings.doubleTapSeekSeconds} seconds",
+                icon = Icons.Default.Gesture,
+                onClick = { showSeekDialog = true }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            SettingNavigationCard(
+                title = "Playback Settings",
+                subtitle = "Hardware acceleration & background play",
+                icon = Icons.Default.PlayCircle,
+                onClick = onNavigateToPlaybackSettings
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            SettingNavigationCard(
+                title = "Subtitle Customization",
+                subtitle = "Font size, family, color & background opacity",
+                icon = Icons.Default.Subtitles,
+                onClick = onNavigateToSubtitleSettings
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            SettingNavigationCard(
+                title = "Hardware Decoder Info",
+                subtitle = "View video decoders & maximum HDR capabilities",
+                icon = Icons.Default.DeveloperBoard,
+                onClick = onNavigateToDecoders
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text("Storage & Privacy", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            SettingNavigationCard(
+                title = "Favorite Bookmarks",
+                subtitle = "View and manage favorite videos",
+                icon = Icons.Default.Star,
+                onClick = onNavigateToFavorites
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            SettingNavigationCard(
+                title = "Rescan Storage",
+                subtitle = "Refresh video & audio tracks",
                 icon = Icons.Default.Refresh,
                 onClick = { viewModel.scanMedia() }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            SettingNavigationCard(
+                title = "Clear Thumbnail Cache",
+                subtitle = "Free disk space by clearing cached thumbnail images",
+                icon = Icons.Default.CleaningServices,
+                onClick = {
+                    viewModel.clearThumbnailCache()
+                    showCacheClearedMessage = true
+                }
             )
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -141,16 +208,17 @@ fun AppSettingsScreen(
 
             SettingNavigationCard(
                 title = "About VYRO Player",
-                subtitle = "Version 1.0.0 • Production Build",
+                subtitle = "Version 1.0.0 • Production Release",
                 icon = Icons.Default.Info,
                 onClick = { showAboutDialog = true }
             )
         }
 
+        // Theme Dialog
         if (showThemeDialog) {
             AlertDialog(
                 onDismissRequest = { showThemeDialog = false },
-                title = { Text("Choose Theme Mode") },
+                title = { Text("App Theme Mode") },
                 text = {
                     Column {
                         ThemeMode.entries.forEach { mode ->
@@ -178,9 +246,160 @@ fun AppSettingsScreen(
                         }
                     }
                 },
-                confirmButton = {
-                    TextButton(onClick = { showThemeDialog = false }) { Text("Close") }
-                }
+                confirmButton = { TextButton(onClick = { showThemeDialog = false }) { Text("Close") } }
+            )
+        }
+
+        // Speed Dialog
+        if (showSpeedDialog) {
+            AlertDialog(
+                onDismissRequest = { showSpeedDialog = false },
+                title = { Text("Default Playback Speed") },
+                text = {
+                    Column {
+                        listOf(0.5f, 1.0f, 1.25f, 1.5f, 2.0f).forEach { speed ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        viewModel.updateSettings(settings.copy(defaultSpeed = speed))
+                                        showSpeedDialog = false
+                                    }
+                                    .padding(vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = settings.defaultSpeed == speed,
+                                    onClick = {
+                                        viewModel.updateSettings(settings.copy(defaultSpeed = speed))
+                                        showSpeedDialog = false
+                                    },
+                                    colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(text = "${speed}x", style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
+                    }
+                },
+                confirmButton = { TextButton(onClick = { showSpeedDialog = false }) { Text("Close") } }
+            )
+        }
+
+        // Aspect Ratio Dialog
+        if (showAspectDialog) {
+            AlertDialog(
+                onDismissRequest = { showAspectDialog = false },
+                title = { Text("Default Aspect Ratio") },
+                text = {
+                    Column {
+                        AspectRatioMode.entries.forEach { mode ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        viewModel.updateSettings(settings.copy(defaultAspectRatio = mode))
+                                        showAspectDialog = false
+                                    }
+                                    .padding(vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = settings.defaultAspectRatio == mode,
+                                    onClick = {
+                                        viewModel.updateSettings(settings.copy(defaultAspectRatio = mode))
+                                        showAspectDialog = false
+                                    },
+                                    colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(text = mode.name, style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
+                    }
+                },
+                confirmButton = { TextButton(onClick = { showAspectDialog = false }) { Text("Close") } }
+            )
+        }
+
+        // Seek Dialog
+        if (showSeekDialog) {
+            AlertDialog(
+                onDismissRequest = { showSeekDialog = false },
+                title = { Text("Double Tap Seek Interval") },
+                text = {
+                    Column {
+                        listOf(5, 10, 15, 30).forEach { sec ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        viewModel.updateSettings(settings.copy(doubleTapSeekSeconds = sec, seekIntervalSeconds = sec))
+                                        showSeekDialog = false
+                                    }
+                                    .padding(vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = settings.doubleTapSeekSeconds == sec,
+                                    onClick = {
+                                        viewModel.updateSettings(settings.copy(doubleTapSeekSeconds = sec, seekIntervalSeconds = sec))
+                                        showSeekDialog = false
+                                    },
+                                    colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(text = "$sec Seconds", style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
+                    }
+                },
+                confirmButton = { TextButton(onClick = { showSeekDialog = false }) { Text("Close") } }
+            )
+        }
+
+        // Language Dialog
+        if (showLangDialog) {
+            AlertDialog(
+                onDismissRequest = { showLangDialog = false },
+                title = { Text("App Language") },
+                text = {
+                    Column {
+                        listOf("System Default", "English", "Spanish", "French", "German", "Japanese").forEach { lang ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        viewModel.updateSettings(settings.copy(appLanguage = lang))
+                                        showLangDialog = false
+                                    }
+                                    .padding(vertical = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(
+                                    selected = settings.appLanguage == lang,
+                                    onClick = {
+                                        viewModel.updateSettings(settings.copy(appLanguage = lang))
+                                        showLangDialog = false
+                                    },
+                                    colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(text = lang, style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
+                    }
+                },
+                confirmButton = { TextButton(onClick = { showLangDialog = false }) { Text("Close") } }
+            )
+        }
+
+        if (showCacheClearedMessage) {
+            AlertDialog(
+                onDismissRequest = { showCacheClearedMessage = false },
+                title = { Text("Cache Cleared") },
+                text = { Text("Disk cached thumbnail images have been successfully cleared.") },
+                confirmButton = { TextButton(onClick = { showCacheClearedMessage = false }) { Text("OK") } }
             )
         }
 
@@ -190,16 +409,14 @@ fun AppSettingsScreen(
                 title = { Text("VYRO Video Player") },
                 text = {
                     Column {
-                        Text(text = "Professional Android Video Player built with Jetpack Compose, Material 3, Clean Architecture, and AndroidX Media3 ExoPlayer 1.11.1.")
+                        Text(text = "Professional Android Video & Audio Player built with Jetpack Compose, Material 3, Clean Architecture, and AndroidX Media3 ExoPlayer 1.11.1.")
                         Spacer(modifier = Modifier.height(8.dp))
                         HorizontalDivider()
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "Package: com.vyro.player", style = MaterialTheme.typography.bodySmall)
+                        Text(text = "Package: com.vyro.player\nMinimum SDK: 24 (Android 7.0)\nTarget SDK: 37 (Android 15+)", style = MaterialTheme.typography.bodySmall)
                     }
                 },
-                confirmButton = {
-                    TextButton(onClick = { showAboutDialog = false }) { Text("OK") }
-                }
+                confirmButton = { TextButton(onClick = { showAboutDialog = false }) { Text("OK") } }
             )
         }
     }
@@ -237,11 +454,6 @@ fun SettingNavigationCard(
                 Text(text = title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            Icon(
-                imageVector = Icons.Default.ChevronRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }

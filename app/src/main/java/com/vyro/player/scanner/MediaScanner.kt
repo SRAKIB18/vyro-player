@@ -10,6 +10,7 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Size
 import androidx.documentfile.provider.DocumentFile
+import com.vyro.player.decoder.HdrCapabilityInspector
 import com.vyro.player.domain.model.AudioItem
 import com.vyro.player.domain.model.VideoItem
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,7 +22,8 @@ import javax.inject.Singleton
 
 @Singleton
 class MediaScanner @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val hdrCapabilityInspector: HdrCapabilityInspector
 ) {
 
     private val thumbnailDir: File by lazy {
@@ -32,8 +34,7 @@ class MediaScanner @Inject constructor(
 
     /**
      * Scans MediaStore video files across internal and external storage.
-     * Extracts full metadata: filename, duration, width/height, bitrate, resolution label, size, date, MIME type, folder, and cached thumbnail.
-     * Performs duplicate entry detection.
+     * Extracts full metadata: filename, duration, width/height, bitrate, resolution label, size, date, MIME type, folder, cached thumbnail, and HDR format.
      */
     fun scanVideos(): List<VideoItem> {
         val videoList = mutableListOf<VideoItem>()
@@ -128,6 +129,7 @@ class MediaScanner @Inject constructor(
 
                     val resolutionLabel = formatResolutionLabel(width, height)
                     val thumbnailPath = generateAndCacheThumbnail(id, effectivePath)
+                    val hdrFormat = hdrCapabilityInspector.detectHdrFormat(effectivePath).displayName
 
                     videoList.add(
                         VideoItem(
@@ -144,7 +146,8 @@ class MediaScanner @Inject constructor(
                             dateAdded = dateAdded,
                             dateModified = dateModified,
                             folderName = folderName,
-                            thumbnailPath = thumbnailPath
+                            thumbnailPath = thumbnailPath,
+                            hdrFormat = hdrFormat
                         )
                     )
                 }
@@ -182,6 +185,7 @@ class MediaScanner @Inject constructor(
                     val bitrate = meta.third
                     val resolutionLabel = formatResolutionLabel(width, height)
                     val thumbnailPath = generateAndCacheThumbnail(id, uriString)
+                    val hdrFormat = hdrCapabilityInspector.detectHdrFormat(uriString).displayName
 
                     safVideos.add(
                         VideoItem(
@@ -198,7 +202,8 @@ class MediaScanner @Inject constructor(
                             dateAdded = dateModified / 1000,
                             dateModified = dateModified,
                             folderName = folderName,
-                            thumbnailPath = thumbnailPath
+                            thumbnailPath = thumbnailPath,
+                            hdrFormat = hdrFormat
                         )
                     )
                 }

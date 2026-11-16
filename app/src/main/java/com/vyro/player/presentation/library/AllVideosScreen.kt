@@ -114,8 +114,10 @@ fun AllVideosScreen(
                 SortFilterDialog(
                     currentOption = uiState.sortOption,
                     currentOrder = uiState.sortOrder,
+                    currentResolutionFilter = uiState.resolutionFilter,
                     onOptionSelected = { viewModel.setSortOption(it) },
                     onOrderSelected = { viewModel.setSortOrder(it) },
+                    onResolutionSelected = { viewModel.setResolutionFilter(it) },
                     onDismiss = { viewModel.setSortDialogVisible(false) }
                 )
             }
