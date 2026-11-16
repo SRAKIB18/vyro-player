@@ -55,6 +55,12 @@ fun HistoryCarouselCard(
                     .height(96.dp)
                     .background(Color(0xFF161824))
             ) {
+                VideoThumbnailImage(
+                    videoPath = history.videoPath,
+                    contentDescription = history.videoTitle,
+                    modifier = Modifier.matchParentSize()
+                )
+
                 Box(
                     modifier = Modifier
                         .size(32.dp)

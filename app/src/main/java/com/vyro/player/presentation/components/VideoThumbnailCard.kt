@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -95,6 +94,13 @@ fun VideoGridItemCard(
                     .aspectRatio(1.6f)
                     .background(Color(0xFF1B1D2A))
             ) {
+                // Actual Video Frame Thumbnail Image
+                VideoThumbnailImage(
+                    videoPath = video.path,
+                    contentDescription = video.title,
+                    modifier = Modifier.matchParentSize()
+                )
+
                 // Play Icon Overlay
                 Box(
                     modifier = Modifier
@@ -230,6 +236,13 @@ fun VideoListItemCard(
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color(0xFF1B1D2A))
             ) {
+                // Actual Video Frame Thumbnail Image
+                VideoThumbnailImage(
+                    videoPath = video.path,
+                    contentDescription = video.title,
+                    modifier = Modifier.matchParentSize()
+                )
+
                 Box(
                     modifier = Modifier
                         .size(28.dp)

@@ -1,5 +1,6 @@
 package com.vyro.player.domain.repository
 
+import android.net.Uri
 import com.vyro.player.domain.model.MediaFolder
 import com.vyro.player.domain.model.VideoItem
 import kotlinx.coroutines.flow.Flow
@@ -13,4 +14,5 @@ interface VideoRepository {
     suspend fun updatePlaybackPosition(id: Long, positionMs: Long)
     suspend fun toggleFavorite(id: Long)
     suspend fun scanMedia(): Int
+    suspend fun scanSafUri(treeUri: Uri): Int
 }

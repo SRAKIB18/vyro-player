@@ -61,6 +61,12 @@ fun ContinueWatchingCard(
                         .clip(RoundedCornerShape(10.dp))
                         .background(Color(0xFF1B1D2A))
                 ) {
+                    VideoThumbnailImage(
+                        videoPath = video.path,
+                        contentDescription = video.title,
+                        modifier = Modifier.matchParentSize()
+                    )
+
                     Box(
                         modifier = Modifier
                             .size(28.dp)

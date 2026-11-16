@@ -33,4 +33,7 @@ interface VideoDao {
 
     @Query("DELETE FROM videos WHERE id NOT IN (:validIds)")
     suspend fun deleteStaleVideos(validIds: List<Long>)
+
+    @Query("DELETE FROM videos")
+    suspend fun clearVideos()
 }

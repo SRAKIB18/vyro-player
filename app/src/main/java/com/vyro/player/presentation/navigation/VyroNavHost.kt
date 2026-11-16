@@ -22,6 +22,8 @@ import com.vyro.player.presentation.home.HomeScreen
 import com.vyro.player.presentation.home.HomeViewModel
 import com.vyro.player.presentation.library.AllVideosScreen
 import com.vyro.player.presentation.library.AllVideosViewModel
+import com.vyro.player.presentation.music.MusicScreen
+import com.vyro.player.presentation.music.MusicViewModel
 import com.vyro.player.presentation.player.PlayerScreen
 import com.vyro.player.presentation.player.PlayerViewModel
 import com.vyro.player.presentation.settings.AppSettingsScreen
@@ -69,7 +71,17 @@ fun VyroNavHost(
                 )
             }
 
-            // 3. Folders Screen
+            // 3. Music Player Screen
+            composable(Screen.Music.route) {
+                val viewModel: MusicViewModel = hiltViewModel()
+                MusicScreen(
+                    viewModel = viewModel,
+                    currentRoute = currentRoute,
+                    onNavigate = { route -> navController.navigate(route) }
+                )
+            }
+
+            // 4. Folders Screen
             composable(Screen.Folders.route) {
                 val viewModel: FoldersViewModel = hiltViewModel()
                 FoldersScreen(
@@ -80,7 +92,7 @@ fun VyroNavHost(
                 )
             }
 
-            // 4. Folder Detail Screen
+            // 5. Folder Detail Screen
             composable(Screen.FolderDetail.route) { backStackEntry ->
                 val folderName = backStackEntry.arguments?.getString("folderName") ?: ""
                 val viewModel: FoldersViewModel = hiltViewModel()
@@ -92,7 +104,7 @@ fun VyroNavHost(
                 )
             }
 
-            // 5. Recent Videos / History Screen
+            // 6. Recent Videos / History Screen
             composable(Screen.RecentVideos.route) {
                 val viewModel: RecentVideosViewModel = hiltViewModel()
                 RecentVideosScreen(
@@ -103,7 +115,7 @@ fun VyroNavHost(
                 )
             }
 
-            // 6. Favorites Screen
+            // 7. Favorites Screen
             composable(Screen.Favorites.route) {
                 val viewModel: FavoritesViewModel = hiltViewModel()
                 FavoritesScreen(
@@ -113,7 +125,7 @@ fun VyroNavHost(
                 )
             }
 
-            // 7. Video Player Screen
+            // 8. Video Player Screen
             composable(Screen.VideoPlayer.route) {
                 val viewModel: PlayerViewModel = hiltViewModel()
                 PlayerScreen(
@@ -122,7 +134,7 @@ fun VyroNavHost(
                 )
             }
 
-            // 8. Playback Settings Screen
+            // 9. Playback Settings Screen
             composable(Screen.PlaybackSettings.route) {
                 PlaybackSettingsScreen(
                     viewModel = settingsViewModel,
@@ -130,7 +142,7 @@ fun VyroNavHost(
                 )
             }
 
-            // 9. Subtitle Settings Screen
+            // 10. Subtitle Settings Screen
             composable(Screen.SubtitleSettings.route) {
                 val viewModel: SubtitleSettingsViewModel = hiltViewModel()
                 SubtitleSettingsScreen(
@@ -139,7 +151,7 @@ fun VyroNavHost(
                 )
             }
 
-            // 10. Hardware Decoder Info Screen
+            // 11. Hardware Decoder Info Screen
             composable(Screen.DecoderInfo.route) {
                 val viewModel: DecoderInfoViewModel = hiltViewModel()
                 DecoderInfoScreen(
@@ -148,7 +160,7 @@ fun VyroNavHost(
                 )
             }
 
-            // 11. App Settings Screen
+            // 12. App Settings Screen
             composable(Screen.AppSettings.route) {
                 val viewModel: AppSettingsViewModel = hiltViewModel()
                 AppSettingsScreen(
