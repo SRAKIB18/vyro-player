@@ -178,9 +178,10 @@ Screens:
 
 Home screen:
 - App logo and search
-- Recently played
+- Recently played with thumbnail(video)
 - Continue watching
 - Video folders
+- view(grid column/row)
 - Video thumbnails
 - Sort and filter controls
 - Bottom navigation

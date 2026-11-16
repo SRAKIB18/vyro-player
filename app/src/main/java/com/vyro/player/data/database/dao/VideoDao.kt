@@ -13,6 +13,9 @@ interface VideoDao {
     @Query("SELECT * FROM videos ORDER BY dateAdded DESC")
     fun getAllVideos(): Flow<List<VideoEntity>>
 
+    @Query("SELECT * FROM videos WHERE isFavorite = 1 ORDER BY title ASC")
+    fun getFavoriteVideos(): Flow<List<VideoEntity>>
+
     @Query("SELECT * FROM videos WHERE folderName = :folderName ORDER BY title ASC")
     fun getVideosInFolder(folderName: String): Flow<List<VideoEntity>>
 

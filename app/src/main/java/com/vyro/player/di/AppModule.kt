@@ -3,6 +3,7 @@ package com.vyro.player.di
 import android.content.Context
 import androidx.room.Room
 import com.vyro.player.data.database.VyroDatabase
+import com.vyro.player.data.database.dao.AudioDao
 import com.vyro.player.data.database.dao.PlaybackHistoryDao
 import com.vyro.player.data.database.dao.VideoDao
 import dagger.Module
@@ -33,4 +34,7 @@ object AppModule {
 
     @Provides
     fun providePlaybackHistoryDao(database: VyroDatabase): PlaybackHistoryDao = database.playbackHistoryDao()
+
+    @Provides
+    fun provideAudioDao(database: VyroDatabase): AudioDao = database.audioDao()
 }

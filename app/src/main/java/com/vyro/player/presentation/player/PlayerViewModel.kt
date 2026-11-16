@@ -40,7 +40,7 @@ class PlayerViewModel @Inject constructor(
             val video = videoRepository.getVideoById(videoId)
             if (video != null) {
                 currentVideo = video
-                playerManager.prepareAndPlay(video, video.lastPlayedPosition)
+                playerManager.prepareAndPlayVideo(video, video.lastPlayedPosition)
             }
         }
     }

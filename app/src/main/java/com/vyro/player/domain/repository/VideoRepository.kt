@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface VideoRepository {
     fun getAllVideos(): Flow<List<VideoItem>>
+    fun getFavoriteVideos(): Flow<List<VideoItem>>
     fun getVideosInFolder(folderName: String): Flow<List<VideoItem>>
     fun getFolders(): Flow<List<MediaFolder>>
     suspend fun getVideoById(id: Long): VideoItem?

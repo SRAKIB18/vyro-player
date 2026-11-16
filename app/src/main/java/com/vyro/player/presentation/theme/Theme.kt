@@ -10,33 +10,49 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.vyro.player.domain.model.ThemeMode
 
 private val DarkColorScheme = darkColorScheme(
-    primary = VyroPrimary,
-    secondary = VyroSecondary,
-    background = VyroDarkBackground,
-    surface = VyroDarkSurface,
-    surfaceVariant = VyroDarkSurfaceVariant,
-    onPrimary = VyroOnPrimary,
-    onSurface = VyroOnSurface
+    primary = VyroEmeraldPrimary,
+    secondary = VyroCyanSecondary,
+    background = VyroBlackBackground,
+    surface = VyroDarkCardSurface,
+    surfaceVariant = VyroDarkCardSurfaceVariant,
+    onPrimary = VyroBlackBackground,
+    onBackground = VyroTextPrimary,
+    onSurface = VyroTextPrimary,
+    onSurfaceVariant = VyroTextSecondary
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = VyroLightPrimary,
+    secondary = VyroLightSecondary,
+    background = VyroLightBackground,
+    surface = VyroLightSurface,
+    surfaceVariant = VyroLightSurfaceVariant,
+    onPrimary = VyroLightSurface,
+    onBackground = Color(0xFF1A1C24),
+    onSurface = Color(0xFF1A1C24),
+    onSurfaceVariant = Color(0xFF5E6578)
 )
 
 @Composable
 fun VYROPlayerTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    themeMode: ThemeMode = ThemeMode.DARK,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
+    val darkTheme = when (themeMode) {
+        ThemeMode.DARK -> true
+        ThemeMode.LIGHT -> false
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    }
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current

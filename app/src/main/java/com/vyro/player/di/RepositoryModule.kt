@@ -1,7 +1,9 @@
 package com.vyro.player.di
 
+import com.vyro.player.data.repository.AudioRepositoryImpl
 import com.vyro.player.data.repository.SettingsRepositoryImpl
 import com.vyro.player.data.repository.VideoRepositoryImpl
+import com.vyro.player.domain.repository.AudioRepository
 import com.vyro.player.domain.repository.SettingsRepository
 import com.vyro.player.domain.repository.VideoRepository
 import dagger.Binds
@@ -19,6 +21,12 @@ abstract class RepositoryModule {
     abstract fun bindVideoRepository(
         videoRepositoryImpl: VideoRepositoryImpl
     ): VideoRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAudioRepository(
+        audioRepositoryImpl: AudioRepositoryImpl
+    ): AudioRepository
 
     @Binds
     @Singleton

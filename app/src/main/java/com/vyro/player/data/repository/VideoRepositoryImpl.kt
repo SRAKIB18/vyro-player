@@ -1,6 +1,8 @@
 package com.vyro.player.data.repository
 
+import com.vyro.player.data.database.dao.PlaybackHistoryDao
 import com.vyro.player.data.database.dao.VideoDao
+import com.vyro.player.data.database.entity.PlaybackHistoryEntity
 import com.vyro.player.data.database.entity.VideoEntity
 import com.vyro.player.domain.model.MediaFolder
 import com.vyro.player.domain.model.VideoItem
@@ -16,11 +18,18 @@ import javax.inject.Singleton
 @Singleton
 class VideoRepositoryImpl @Inject constructor(
     private val videoDao: VideoDao,
+    private val playbackHistoryDao: PlaybackHistoryDao,
     private val mediaScanner: MediaScanner
 ) : VideoRepository {
 
     override fun getAllVideos(): Flow<List<VideoItem>> {
         return videoDao.getAllVideos().map { entities ->
+            entities.map { it.toDomainModel() }
+        }
+    }
+
+    override fun getFavoriteVideos(): Flow<List<VideoItem>> {
+        return videoDao.getFavoriteVideos().map { entities ->
             entities.map { it.toDomainModel() }
         }
     }
@@ -50,6 +59,19 @@ class VideoRepositoryImpl @Inject constructor(
 
     override suspend fun updatePlaybackPosition(id: Long, positionMs: Long) {
         videoDao.updatePlaybackPosition(id, positionMs)
+        val video = videoDao.getVideoById(id)
+        if (video != null) {
+            playbackHistoryDao.insertHistory(
+                PlaybackHistoryEntity(
+                    videoId = video.id,
+                    videoTitle = video.title,
+                    videoPath = video.path,
+                    lastPosition = positionMs,
+                    totalDuration = video.duration,
+                    timestamp = System.currentTimeMillis()
+                )
+            )
+        }
     }
 
     override suspend fun toggleFavorite(id: Long) {
